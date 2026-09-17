@@ -56,25 +56,45 @@ TCP and UDP are transport protocols. They use port numbers to send data to the c
 
 ### Data flow
 
+![Data flow: from pressing enter to page displayed](data-flow-diagram.png)
+
 1. **The browser reads the URL.** It understands that `https` means a secure web connection, the website name is `www.something.com`, and the default port is `443`.
 
-2. **DNS finds the server.** The computer checks its DNS cache. If the address is not there, it asks a DNS server. DNS changes the website name into an IP address.
+2. **DNS resolves the domain name.** The browser first checks its local cache, then asks a DNS server for the IP address of the website. This converts the domain name into an IP address.
 
-3. **The packet leaves the computer.** The computer checks its routing table. Since the server is usually outside the local network, the packet goes to the default gateway, normally a home or office router.
+3. **The packet leaves the client.** The request is sent from the computer to its default gateway, usually a home or office router. The device may use NAT so that a private internal IP can communicate with the public internet.
 
-4. **Routers forward the packet.** The packet passes through several routers until it reaches the web server. A home router may also change the private IP address to a public IP address using NAT.
+4. **The request is forwarded across the network.** Routers pass the packet hop by hop through the ISP and the internet until it reaches the destination server.
 
-5. **TCP creates a connection.** The computer connects to the server on port 443. TCP uses a three-way handshake: `SYN`, `SYN-ACK`, and `ACK`. TCP makes sure data arrives in the correct order.
+5. **TCP establishes a connection.** The client and server use a three-way handshake: `SYN`, `SYN-ACK`, and `ACK`. This ensures that the connection is opened correctly before data is sent.
 
-6. **TLS makes the connection secure.** The server sends a security certificate. The browser checks that it belongs to the website and is trusted. Both sides then create encryption keys.
+6. **TLS secures the connection.** The server presents a certificate, and the browser verifies that it is valid and trusted. Then both sides agree on encryption keys for secure communication.
 
-7. **The browser sends an HTTP request.** The request is encrypted and asks the server for the home page, for example:
+7. **The browser sends the HTTPS request.** The request is encrypted and asks the server for the home page, for example:
 
    ```http
    GET / HTTP/1.1
    Host: www.something.com
    ```
 
-8. **The server processes the request.** It finds or creates the requested page and sends back a response. The response normally contains HTML and may also refer to CSS, JavaScript, images, and fonts.
+8. **The server processes the request.** The web server finds or generates the page and sends back a response. The response usually contains HTML, CSS, JavaScript, and other assets.
 
-9. **The browser displays the page.** The computer receives and decrypts the response. The browser reads the HTML, downloads the other files, builds the page layout, and displays it on the screen.
+9. **The browser displays the page.** The response is decrypted, parsed, and rendered. The browser downloads additional files, builds the page layout, and displays it on the screen.
+
+## 3. Azure VNet design
+
+The diagram below shows an Azure Virtual Network with multiple subnets and security controls.
+
+![Azure VNet diagram](azure-vnet-diagram.png)
+
+In this architecture:
+
+- The user connects to the internet through a public entry point.
+- A load balancer distributes traffic into the Azure VNet.
+- The Azure VNet contains separate subnets for web, application, and database resources.
+- The web subnet hosts the VM scale set and is controlled by a subnet NSG.
+- The application subnet hosts Azure App Services and has its own NSG.
+- The database subnet hosts the Azure SQL database and is protected by a database subnet NSG.
+- Internal traffic is restricted by NSGs, which act as firewalls for subnet-level filtering.
+
+This design improves security, segmentation, and scalability by separating services into different network areas.
