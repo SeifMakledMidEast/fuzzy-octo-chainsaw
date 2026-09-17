@@ -56,7 +56,7 @@ TCP and UDP are transport protocols. They use port numbers to send data to the c
 
 ### Data flow
 
-![Data flow: from pressing enter to page displayed](data-flow-diagram.png)
+![Data flow: from pressing enter to page displayed](Data_Flow_Diagram.png)
 
 1. **The browser reads the URL.** It understands that `https` means a secure web connection, the website name is `www.something.com`, and the default port is `443`.
 
@@ -85,7 +85,7 @@ TCP and UDP are transport protocols. They use port numbers to send data to the c
 
 The diagram below shows an Azure Virtual Network with multiple subnets and security controls.
 
-![Azure VNet diagram](azure-vnet-diagram.png)
+![Azure VNet diagram](Azure_Vnet_Diagram.png)
 
 In this architecture:
 
